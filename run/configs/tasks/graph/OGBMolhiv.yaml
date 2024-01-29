@@ -1,0 +1,9 @@
+dataset:
+  format: OGB
+  name: ogbg-molhiv
+  task: graph
+  task_type: classification
+  node_encoder: True
+  node_encoder_name: Atom
+  edge_encoder: True
+  edge_encoder_name: Bond

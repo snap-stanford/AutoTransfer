@@ -1,0 +1,81 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT license.
+
+"""
+Naive random tuner.
+You can specify an integer seed to determine random result.
+"""
+
+from __future__ import annotations
+
+__all__ = ['RandomTuner']
+
+import logging
+
+import numpy as np
+import schema
+
+from nni import ClassArgsValidator
+from nni.common.hpo_utils import format_search_space
+from nni.tuner import Tuner
+from utils import deformat_parameters
+
+_logger = logging.getLogger('nni.tuner.random')
+
+class RandomTuner(Tuner):
+    """
+    A naive tuner that generates fully random hyperparameters.
+    Examples
+    --------
+    .. code-block::
+        config.tuner.name = 'Random'
+        config.tuner.class_args = {
+            'seed': 100
+        }
+    Parameters
+    ----------
+    seed
+        The random seed.
+    """
+
+    def __init__(self, seed: int | None = None):
+        self.space = None
+        if seed is None:  # explicitly generate a seed to make the experiment reproducible
+            seed = np.random.default_rng().integers(2 ** 31)
+        self.rng = np.random.default_rng(seed)
+        _logger.info(f'Using random seed {seed}')
+
+    def update_search_space(self, space):
+        self.space = format_search_space(space)
+
+    def generate_parameters(self, *args, **kwargs):
+        params = suggest(self.rng, self.space)
+        print(params)
+        return deformat_parameters(params, self.space)
+
+    def receive_trial_result(self, *args, **kwargs):
+        pass
+
+class RandomClassArgsValidator(ClassArgsValidator):
+    def validate_class_args(self, **kwargs):
+        schema.Schema({schema.Optional('seed'): int}).validate(kwargs)
+
+def suggest(rng, space):
+    params = {}
+    for key, spec in space.items():
+        if spec.is_activated_in(params):
+            params[key] = suggest_parameter(rng, spec)
+    return params
+
+def suggest_parameter(rng, spec):
+    if spec.categorical:
+        if isinstance(spec.values[0], list):
+            _logger.info(f'spec val is {spec.values}')
+            return rng.choice(np.arange(len(spec.values[0][0])), p =
+            spec.values[0][1])
+        else:
+            return rng.integers(spec.size)
+    if spec.normal_distributed:
+        return rng.normal(spec.mu, spec.sigma)
+    else:
+        return rng.uniform(spec.low, spec.high)

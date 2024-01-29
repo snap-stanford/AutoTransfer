@@ -1,0 +1,16 @@
+experimentName: nni_test
+searchSpaceFile: search_space.json
+trialCommand: python3 main_nni.py --cfg configs/example.yaml 
+trialCodeDirectory: ../../
+experimentWorkingDirectory: ../../nni-experiments
+trialGpuNumber: 1
+trialConcurrency: 1
+maxExperimentDuration: 10h
+maxTrialNumber: 100
+tuner:
+  codeDirectory: ~/AnycostAutoGNN/run/tuners
+  className: prob_tuner.ProbabilisticTuner
+trainingService:
+  platform: local
+  useActiveGpu: True
+  gpuIndices: 1 # Change to use desired GPUs

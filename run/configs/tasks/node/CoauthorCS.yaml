@@ -1,0 +1,13 @@
+dataset:
+  format: PyG
+  name: CoauthorCS
+  task: node
+  task_type: classification
+  transductive: True
+  split: [0.5, 0.25, 0.25]
+  augment_feature: []
+  augment_feature_dims: [0]
+  augment_feature_repr: position
+  augment_label: ''
+  augment_label_dims: 0
+  transform: none

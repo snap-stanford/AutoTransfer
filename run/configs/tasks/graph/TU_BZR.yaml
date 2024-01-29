@@ -1,0 +1,13 @@
+dataset:
+  format: PyG
+  name: TU_BZR
+  task: graph
+  task_type: classification
+  transductive: False
+  split: [0.8, 0.1, 0.1]
+  augment_feature: []
+  augment_feature_dims: [10]
+  augment_feature_repr: position
+  augment_label: ''
+  augment_label_dims: 5
+  transform: none
